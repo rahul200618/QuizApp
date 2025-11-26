@@ -1,0 +1,93 @@
+/* Full-screen background with image */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+
+
+  /* To center the app container */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 100vh;
+}
+
+/* Main Card (Glassmorphic UI) */
+.app-container {
+  width: 450px;
+  padding: 30px;
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+/* Dark mode support */
+.dark-mode {
+  background: rgba(20, 20, 20, 0.55);
+  color: white;
+}
+
+/* Progress Bar */
+.progress-bar {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #4c6ef5;
+  transition: width 0.4s ease;
+}
+
+/* Options Buttons */
+.options button {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  background: #ffffff;
+  transition: 0.25s;
+}
+
+.options button:hover {
+  transform: scale(1.04);
+}
+
+/* Correct / Wrong Animation */
+.correct { background: #51cf66 !important; color: white; }
+.wrong { background: #ff6b6b !important; color: white; }
+
+/* Restart + Theme Buttons */
+.restart-btn, .theme-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  background: #4c6ef5;
+  color: white;
+  margin-top: 20px;
+  cursor: pointer;
+}
+
+.restart-btn:hover,
+.theme-btn:hover {
+  background: #3b5bdb;
+}
+
+/* Timer */
+.timer {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
