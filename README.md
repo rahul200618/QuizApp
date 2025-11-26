@@ -1,1 +1,1 @@
-# QuizApp
+A simple and interactive MCQ Quiz App built using React. Displays one question at a time, tracks score with useState, uses props for modular components, and shows results with conditional UI. Includes a restart option and clean state transitions.
