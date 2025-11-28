@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 function Question({ data, onAnswer, selected }) {
   return (
     <div>

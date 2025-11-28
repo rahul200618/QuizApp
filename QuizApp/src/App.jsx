@@ -3,39 +3,36 @@ import Question from "./components/Question";
 import { questions } from "./data/questions";
 import "./App.css";
 
+const shuffleArray = (array) => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
 function App() {
   const [username, setUsername] = useState("");
-  const [startQuiz, setStartQuiz] = useState(false);
-
+  const [started, setStarted] = useState(false);
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
-
   const [selected, setSelected] = useState(null);
-  const [darkMode, setDarkMode] = useState(false);
-
   const [timer, setTimer] = useState(15);
+  const [shuffledQuestions, setShuffledQuestions] = useState([]);
 
   useEffect(() => {
-    if (!startQuiz || finished) return;
-
-    if (timer === 0) {
-      nextQuestion();
+    if (!started || finished || timer === 0) {
+      if (timer === 0) nextQuestion();
       return;
     }
-
-    const interval = setInterval(() => setTimer(timer - 1), 1000);
+    const interval = setInterval(() => setTimer(t => t - 1), 1000);
     return () => clearInterval(interval);
-  }, [timer, startQuiz, finished]);
-
-  const handleStart = () => {
-    if (username.trim() !== "") {
-      setStartQuiz(true);
-    }
-  };
+  }, [timer, started, finished]);
 
   const nextQuestion = () => {
-    if (index + 1 < questions.length) {
+    if (index + 1 < shuffledQuestions.length) {
       setIndex(index + 1);
       setSelected(null);
       setTimer(15);
@@ -46,12 +43,15 @@ function App() {
 
   const handleAnswer = (option) => {
     setSelected(option);
+    if (option === shuffledQuestions[index].answer) setScore(score + 1);
+    setTimeout(nextQuestion, 700);
+  };
 
-    if (option === questions[index].answer) {
-      setScore(score + 1);
+  const startQuiz = () => {
+    if (username.trim()) {
+      setShuffledQuestions(shuffleArray(questions));
+      setStarted(true);
     }
-
-    setTimeout(() => nextQuestion(), 700);
   };
 
   const restart = () => {
@@ -60,82 +60,50 @@ function App() {
     setFinished(false);
     setTimer(15);
     setSelected(null);
-    setStartQuiz(false);
+    setShuffledQuestions(shuffleArray(questions));
   };
 
-  return (
-    <div className={`app-container ${darkMode ? "dark-mode" : ""}`}>
-      
-      <button className="theme-btn" onClick={() => setDarkMode(!darkMode)}>
-        {darkMode ? "🌞 Light Mode" : "🌙 Dark Mode"}
-      </button>
-
-      {/* Username Screen */}
-      {!startQuiz && !finished && (
-        <>
-          <h1>Welcome to Quizoro 🎯</h1>
-          <p>Enter your name to begin</p>
-
-          <input
-            type="text"
-            placeholder="Your Name..."
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "12px",
-              borderRadius: "12px",
-              border: "none",
-              marginTop: "12px",
-              fontSize: "16px",
-            }}
-          />
-
-          <button
-            className="restart-btn"
-            style={{ marginTop: "20px" }}
-            onClick={handleStart}
-          >
+  if (!started) {
+    return (
+      <div className="container">
+        <h1>Welcome to Quizoro 🎯</h1>
+        <p>Enter your name to begin</p>
+        <input
+          type="text"
+          placeholder="Your Name..."
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="option"
+        />
+        <div className="actions">
+          <button className="btn" onClick={startQuiz}>
             Start Quiz 🚀
           </button>
-        </>
-      )}
+        </div>
+      </div>
+    );
+  }
 
-      {/* Quiz Screen */}
-      {startQuiz && !finished && (
-        <>
-          <h2>Hi, {username}! 👋</h2>
+  if (finished) {
+    return (
+      <div className="container result">
+        <h1>🎉 Great Job, {username}!</h1>
+        <p><strong>You scored {score} / {shuffledQuestions.length}</strong></p>
+        <div className="actions">
+          <button className="btn" onClick={restart}>Restart Quiz 🔁</button>
+        </div>
+      </div>
+    );
+  }
 
-          <div className="progress-bar">
-            <div
-              className="progress-fill"
-              style={{ width: `${((index + 1) / questions.length) * 100}%` }}
-            />
-          </div>
-
-          <div className="timer">⏳ Time Left: {timer}s</div>
-
-          <Question
-            data={questions[index]}
-            onAnswer={handleAnswer}
-            selected={selected}
-          />
-        </>
-      )}
-
-      {/* Result Screen */}
-      {finished && (
-        <>
-          <h1>🎉 Great Job, {username}!</h1>
-          <p className="score-text">
-            You scored {score} / {questions.length}
-          </p>
-
-          <button className="restart-btn" onClick={restart}>
-            Play Again 🔁
-          </button>
-        </>
-      )}
+  return (
+    <div className="container">
+      <h2>Hi, {username}! 👋</h2>
+      <div className="progress">
+        <span style={{ "--value": `${((index + 1) / shuffledQuestions.length) * 100}%` }} />
+      </div>
+      <p>⏳ Time Left: {timer}s</p>
+      <Question data={shuffledQuestions[index]} onAnswer={handleAnswer} selected={selected} />
     </div>
   );
 }
